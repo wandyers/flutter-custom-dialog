@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 
 import 'flutter_custom_dialog_widget.dart';
@@ -30,6 +32,8 @@ class YYDialog {
 
   get isShowing => _isShowing; //当前弹窗是否可见
   bool _isShowing = false;
+
+  bool isAllowBackCloseDialog = true; //是否可使用Android的返回按钮关闭弹窗, iOS设置此属性无效
 
   //============================================================================
   static void init(BuildContext ctx) {
@@ -264,6 +268,7 @@ class YYDialog {
       animatedFunc: animatedFunc,
       barrierDismissible: barrierDismissible,
       duration: duration,
+      isAllowBackCloseDialog: isAllowBackCloseDialog,
       child: Padding(
         padding: margin,
         child: Column(
@@ -422,6 +427,7 @@ class CustomDialog {
   Gravity _gravity;
   bool _gravityAnimationEnable;
   Function _animatedFunc;
+  bool _isAllowBackCloseDialog;
 
   CustomDialog({
     @required Widget child,
@@ -433,6 +439,7 @@ class CustomDialog {
     bool gravityAnimationEnable,
     Function animatedFunc,
     bool barrierDismissible,
+    bool isAllowBackCloseDialog,
   })  : _child = child,
         _context = context,
         _gravity = gravity,
@@ -441,7 +448,8 @@ class CustomDialog {
         _barrierColor = barrierColor,
         _animatedFunc = animatedFunc,
         _transitionsBuilder = transitionsBuilder,
-        _barrierDismissible = barrierDismissible {
+        _barrierDismissible = barrierDismissible,
+        _isAllowBackCloseDialog = isAllowBackCloseDialog {
     this.show();
   }
 
@@ -462,7 +470,12 @@ class CustomDialog {
           Animation<double> secondaryAnimation) {
         return Builder(
           builder: (BuildContext context) {
-            return _child;
+            return WillPopScope(
+              child: _child, 
+              onWillPop: () async{
+                return Platform.isIOS? true : _isAllowBackCloseDialog;
+              }
+            );
           },
         );
       },

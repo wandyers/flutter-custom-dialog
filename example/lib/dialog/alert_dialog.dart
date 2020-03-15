@@ -5,6 +5,7 @@ YYDialog YYAlertDialogBody() {
   return YYDialog().build()
     ..width = 240
     ..borderRadius = 4.0
+    ..isAllowBackCloseDialog = false
     ..text(
       padding: EdgeInsets.all(18.0),
       text: "Discard draft?",
